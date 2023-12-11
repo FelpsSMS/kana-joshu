@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../@/components/ui/Button'
 import { Card, CardState, useCardStore } from '@/@/lib/store'
 import { getCardsForTheDay } from './Home'
+import CardBack from './CardBack'
+
+const LIMIT_NEW_CARDS_PER_DAY = 5
 
 const Session: FC = () => {
     const navigate = useNavigate()
@@ -18,7 +21,6 @@ const Session: FC = () => {
         today.setHours(0, 0, 0, 0)
 
         const cardsForTheDay = getCardsForTheDay(cards)
-        //cardsForTheDay.forEach((el) => console.log(el, new Date(el.dueDate)))
 
         if (cardsForTheDay.length <= 0) navigate('/finished')
 
@@ -28,7 +30,10 @@ const Session: FC = () => {
     useEffect(() => {
         const shuffledCardList = updateAndShuffleCardList()
 
-        const newAndLearningCards = shuffledCardList.filter((card) => card.cardState === (CardState.new || CardState.learning))
+        const newCards = shuffledCardList.filter((card) => card.cardState === CardState.new)
+        const learningCards = shuffledCardList.filter((card) => card.cardState === (CardState.learning))
+
+        const newAndLearningCards = [...newCards.slice(0, LIMIT_NEW_CARDS_PER_DAY), ...learningCards]
 
         newAndLearningCards.length > 0 ? setCardsBeingReviewed(newAndLearningCards) : setCardsBeingReviewed(shuffledCardList)
     }, [])
@@ -38,7 +43,7 @@ const Session: FC = () => {
         updateSRSStats(currentCard, pass)
 
         if (cardsBeingReviewed.length <= cardsBeingReviewed.indexOf(currentCard) + 1) {
-            setCardsBeingReviewed(updateAndShuffleCardList())
+            setCardsBeingReviewed(() => updateAndShuffleCardList())
             setCurrentCard(cardsBeingReviewed[0])
         } else {
             setCurrentCard((prevCard: Card) => cardsBeingReviewed[cardsBeingReviewed.indexOf(prevCard) + 1])
@@ -46,27 +51,20 @@ const Session: FC = () => {
     }
 
     return (
-        <>
-            <div className="flex flex-col gap-8">
-                <div className="bg-foreground p-10 flex items-center justify-center rounded-lg">
-                    <span className="font-extrabold text-8xl text-background">{currentCard?.kana}</span>
+        <div className="flex flex-col gap-8 justify-center items-center py-8">
+            <div className="bg-foreground p-10 flex items-center justify-center rounded-lg sm:p-24">
+                <span className="font-extrabold text-8xl text-background sm:text-kana-sm lg:text-kana-lg">{currentCard?.kana}</span>
+            </div>
+
+            {showCardBack ?
+                <CardBack handleSelection={handleSelection} currentCard={currentCard} />
+                :
+                <div className="flex justify-center">
+                    <Button onClick={() => setShowCardBack(true)}>Show</Button>
                 </div>
-                {
-                    showCardBack && <span className="font-extrabold text-8xl text-background">{currentCard?.key}</span>
-                }
-                {
-                    showCardBack ?
-                        <div className="flex justify-between">
-                            <Button onClick={() => handleSelection(true)}>Pass</Button>
-                            <Button onClick={() => handleSelection(false)} variant={'secondary'}>Fail</Button>
-                        </div>
-                        :
-                        <div className="flex justify-center">
-                            <Button onClick={() => setShowCardBack(true)}>Show</Button>
-                        </div>
-                }
-            </div >
-        </>
+            }
+
+        </div>
     )
 }
 

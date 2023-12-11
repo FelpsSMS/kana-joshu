@@ -7,7 +7,7 @@ type TopbarProps = {
 
 const Topbar: FC<TopbarProps> = ({ }) => {
     return (
-        <div className="flex items-center justify-center h-20 bg-primary">
+        <div className="flex items-center justify-center py-4 bg-primary">
             <ModeToggle />
 
         </div>

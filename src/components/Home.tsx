@@ -7,13 +7,8 @@ export const getCardsForTheDay = (cardList: Card[]) => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    console.log(cardList.map((card) => console.table(card)))
-
     return cardList.filter((card) => card.dueDate <= today.getTime())
 }
-
-//TODO: ADD NUMBER OF NEW CARDS PER DAY
-//TODO: MAKE IT SO CARDS KEEP SHOWING UP AFTER "NEW" AND "LEARNING" CARDS UNTIL THERE ARE NO MORE "RELEARNING" CARDS
 
 const Home: FC = ({ }) => {
     const navigate = useNavigate()

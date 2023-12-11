@@ -6,7 +6,7 @@ type FooterProps = {
 
 const Footer: FC<FooterProps> = ({ }) => {
     return (
-        <div className="flex items-center justify-center h-20 bg-primary">
+        <div className="flex items-center justify-center py-8 bg-primary">
         </div>
     )
 }

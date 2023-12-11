@@ -19,14 +19,15 @@ export function removeHours(dateInMilliseconds: number) {
 }
 
 export function calculateSRSStats({ key, repetitions, efactor, leech, mature, cardState, 
-  totalLapses, consecutiveLapses, failCount, passCount }: Card, pass: boolean): CardSRSStats {
+  totalLapses, consecutiveLapses, failCount, passCount, dueDate }: Card, pass: boolean): CardSRSStats {
   let quality = 0
   
-  if (cardState == CardState.new) cardState = CardState.learning
-
+  
   if (pass) {
     quality = 4
     passCount += 1
+    
+    if (cardState == CardState.new) cardState = CardState.learning
 
     if (cardState == CardState.learning) cardState = CardState.reviewing
     
@@ -55,7 +56,7 @@ export function calculateSRSStats({ key, repetitions, efactor, leech, mature, ca
     
   const interval = getInterval(repetitions, newEfactor, quality)
 
-  const newDueDate = Date.now() + millisecondsInDay * interval
+  const newDueDate = pass ? Date.now() + millisecondsInDay * interval : dueDate
     
   leech = consecutiveLapses > 4
   mature = interval > millisecondsInDay * DAYS_FOR_CARD_TO_BE_MATURE

@@ -70,8 +70,6 @@ export const useCardStore = create<State & Actions>()(persist((set) => ({
 
     initCards: () => set(() => ({
         cards: UNIQUE_VALUES_LIST.map((el) => {
-            console.log({...el, ...DEFAULT_SRS_VALUES})
-
             return mergeObjects(el, DEFAULT_SRS_VALUES) as Card
         })
     })),
